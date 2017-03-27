@@ -11,37 +11,35 @@ def is_alert_present(wd):
     except:
         return False
 
+
 class test_add_group(unittest.TestCase):
     def setUp(self):
         self.wd = webdriver.Chrome()
         self.wd.implicitly_wait(60)
-    
-    def test_add_group(self):
+
+    def open_home_page(self):
         wd = self.wd
-        self.open_home_page(wd)
-        self.login(wd, username="admin", password="secret")
-        self.open_group_page(wd)
-        self.create_group(wd, Group(name="asdf", header="qwertr", footer="qwert"))
-        self.return_to_groups_page(wd)
-        self.logout(wd)
+        wd.get("http://localhost/addressbook/")
 
-    def test_add_empty_group(self):
+    def login(self, username, password):
         wd = self.wd
-        self.open_home_page(wd)
-        self.login(wd, username="admin", password="secret")
-        self.open_group_page(wd)
-        self.create_group(wd, Group(name="", header="", footer=""))
-        self.return_to_groups_page(wd)
-        self.logout(wd)
+        self.open_home_page()
+        wd.find_element_by_name("user").click()
+        wd.find_element_by_name("user").clear()
+        wd.find_element_by_name("user").send_keys(username)
+        wd.find_element_by_id("LoginForm").click()
+        wd.find_element_by_name("pass").click()
+        wd.find_element_by_name("pass").clear()
+        wd.find_element_by_name("pass").send_keys(password)
+        wd.find_element_by_xpath("//form[@id='LoginForm']/input[3]").click()
 
+    def open_group_page(self):
+        wd = self.wd
+        wd.find_element_by_link_text("groups").click()
 
-    def logout(self, wd):
-        wd.find_element_by_link_text("Logout").click()
-
-    def return_to_groups_page(self, wd):
-        wd.find_element_by_link_text("group page").click()
-
-    def create_group(self, wd, group):
+    def create_group(self, group):
+        wd = self.wd
+        self.open_group_page()
         # init group creation
         wd.find_element_by_name("new").click()
         # fill new form
@@ -56,26 +54,31 @@ class test_add_group(unittest.TestCase):
         wd.find_element_by_name("group_footer").send_keys(group.footer)
         # submit group creation
         wd.find_element_by_name("submit").click()
+        self.return_to_groups_page()
+
+    def return_to_groups_page(self):
+        wd = self.wd
+        wd.find_element_by_link_text("group page").click()
+
+    def logout(self):
+        wd = self.wd
+        wd.find_element_by_link_text("Logout").click()
 
 
-    def open_group_page(self, wd):
-        wd.find_element_by_link_text("groups").click()
+    def test_add_group(self):
+        self.login(username="admin", password="secret")
+        self.create_group(Group(name="asdf", header="qwertr", footer="qwert"))
+        self.logout()
 
-    def login(self, wd, username, password):
-        wd.find_element_by_name("user").click()
-        wd.find_element_by_name("user").clear()
-        wd.find_element_by_name("user").send_keys(username)
-        wd.find_element_by_id("LoginForm").click()
-        wd.find_element_by_name("pass").click()
-        wd.find_element_by_name("pass").clear()
-        wd.find_element_by_name("pass").send_keys(password)
-        wd.find_element_by_xpath("//form[@id='LoginForm']/input[3]").click()
+    def test_add_empty_group(self):
+        self.login(username="admin", password="secret")
+        self.create_group(Group(name="", header="", footer=""))
+        self.logout()
 
-    def open_home_page(self, wd):
-        wd.get("http://localhost/addressbook/")
 
     def tearDown(self):
         self.wd.quit()
+
 
 if __name__ == '__main__':
     unittest.main()
