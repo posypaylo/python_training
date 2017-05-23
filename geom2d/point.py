@@ -12,7 +12,7 @@ class Point:
         dy = p2.y - self.y
         return sqrt(dx*dx + dy*dy)
 
-    def __lt__(self, other):
+    def __lt__(self, other):   # Перегружает стандартную операцию меньше
         return self.y < other.y
 
     def __repr__(self):
