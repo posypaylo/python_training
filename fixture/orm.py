@@ -8,7 +8,7 @@ from pymysql.converters import decoders
 class ORMFixture:
 
 
-    db = Database()
+    db = Database()    # Переменная уровня класса
 
     class ORMGroup(db.Entity):
         _table_ = "group_list"   # название таблицы в бд
@@ -17,9 +17,6 @@ class ORMFixture:
         header = Optional(str, column='group_header')
         footer = Optional(str, column='group_footer')
         contacts = Set(lambda: ORMFixture.ORMContact, table="address_in_groups", column="id", reverse="groups", lazy=True) # тип set - множество (в скобках указывается тип объектов, которые входят в это множесто)
-                                                                                                                # нужно указать парные свойства - reverse
-
-
 
     class ORMContact(db.Entity):      # Для того, чтобы этот класс привязать к базе данных - у него в качестве базового указывается вложенный внутрь этого объекта класс db.Entity
         _table_ = 'addressbook'
